@@ -6,14 +6,13 @@ function Canvas() {
   const [currNode, setCurrNode] = useState(-1);
 
   const draw = ctx => {
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 6;
     ctx.fillStyle = "black";
     ctx.beginPath();
     if (nodes && currNode !== -1) {
-      ctx.arc(nodes[currNode][0], nodes[currNode][1], 5, 0, 2 * Math.PI);
-      console.log("x position" + nodes);
+      ctx.arc(nodes[currNode][0], nodes[currNode][1], 7, 0, 2 * Math.PI);
       ctx.fill();
-
+      if (currNode === 0) ctx.stroke();
       if (currNode > 0) {
         ctx.moveTo(nodes[currNode - 1][0], nodes[currNode - 1][1]);
         ctx.lineTo(nodes[currNode][0], nodes[currNode][1]);
@@ -31,9 +30,6 @@ function Canvas() {
 
   const handleMouseDown = mouseEvent => {
     const point = relativeCoordinates(mouseEvent);
-
-    console.log("Point: " + point);
-
     setCurrNode(currNode + 1);
     setNodes([...nodes, point]);
   };
@@ -41,8 +37,6 @@ function Canvas() {
   const relativeCoordinates = mouseEvent => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
-
-    console.log("Mouse Client: " + mouseEvent.clientX);
 
     return [
       mouseEvent.clientX - boundingRect.left,
@@ -69,7 +63,6 @@ function Canvas() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { width, height } = ctx.canvas;
-
     ctx.clearRect(0, 0, width, height);
     setNodes([]);
     setCurrNode(-1);
