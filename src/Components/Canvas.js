@@ -7,9 +7,13 @@ function Canvas() {
   const [nodes, setNodes] = useState([]);
   const [currNode, setCurrNode] = useState(-1);
   const [reset, setReset] = useState(false);
+  const [complete, setComplete] = useState(true);
 
   const draw = (ctx, canvas) => {
-    if (currNode === 0) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (currNode === 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setComplete(false);
+    }
     ctx.lineWidth = 6;
     ctx.fillStyle = "black";
     ctx.beginPath();
@@ -80,10 +84,12 @@ function Canvas() {
     const ctx = canvas.getContext("2d");
     const { width, height } = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
-    setReset(reset ? false : true);
     setNodes([]);
     setCurrNode(-1);
+    setReset(reset ? false : true);
+    setComplete(true);
   };
+
   const handleComplete = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -93,6 +99,7 @@ function Canvas() {
     ctx.moveTo(nodes[currNode][0], nodes[currNode][1]);
     ctx.lineTo(nodes[0][0], nodes[0][1]);
     ctx.stroke();
+    setComplete(true);
   };
 
   return (
@@ -108,7 +115,11 @@ function Canvas() {
         <Button className="m-3 btn-block" onClick={handleReset}>
           Reset
         </Button>
-        <Button className="m-3 btn-block" onClick={handleComplete}>
+        <Button
+          className="m-3 btn-block"
+          onClick={handleComplete}
+          disabled={complete}
+        >
           Complete
         </Button>
       </Navbar>
