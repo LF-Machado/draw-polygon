@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Navbar, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function Canvas() {
   const canvasRef = useRef(null);
   const [nodes, setNodes] = useState([]);
   const [currNode, setCurrNode] = useState(-1);
+  const [reset, setReset] = useState(false);
 
-  const draw = ctx => {
+  const draw = (ctx, canvas) => {
+    if (currNode === 0) ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 6;
     ctx.fillStyle = "black";
     ctx.beginPath();
@@ -25,7 +29,7 @@ function Canvas() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     resizeCanvas(canvas);
-    draw(ctx);
+    draw(ctx, canvas);
   }, [draw, nodes]);
 
   const handleMouseDown = mouseEvent => {
@@ -33,6 +37,18 @@ function Canvas() {
     setCurrNode(currNode + 1);
     setNodes([...nodes, point]);
   };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    ctx.font = "bold 30px Arial";
+    ctx.fillText(
+      "Click to start drawing your polygon",
+      canvas.width / 2 - 220,
+      canvas.height / 2 + 8
+    );
+  }, [reset]);
 
   const relativeCoordinates = mouseEvent => {
     const canvas = canvasRef.current;
@@ -64,6 +80,7 @@ function Canvas() {
     const ctx = canvas.getContext("2d");
     const { width, height } = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
+    setReset(reset ? false : true);
     setNodes([]);
     setCurrNode(-1);
   };
@@ -80,18 +97,30 @@ function Canvas() {
 
   return (
     <div>
+      <Navbar
+        collapseOnSelect
+        bg="dark"
+        variant="dark"
+        className="m-auto align-self-center justify-content-between  "
+        fixed="top"
+      >
+        <Navbar.Brand>Draw Polygon</Navbar.Brand>
+        <Button className="m-3 btn-block" onClick={handleReset}>
+          Reset
+        </Button>
+        <Button className="m-3 btn-block" onClick={handleComplete}>
+          Complete
+        </Button>
+      </Navbar>
       <canvas
         ref={canvasRef}
         style={{
-          width: "500px",
-          height: "500px",
-          marginTop: "50px",
-          backgroundColor: "slategray",
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(245, 245, 148, 0.993)",
         }}
         onMouseDown={handleMouseDown}
       />
-      <button onClick={handleReset}>Reset</button>
-      <button onClick={handleComplete}>Complete</button>
     </div>
   );
 }
